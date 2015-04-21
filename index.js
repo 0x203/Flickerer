@@ -1,3 +1,5 @@
 $('document').ready(function(){
-	alert('Im ready');
+    $('body').click(function() {
+        $(this).toggleClass('black');
+    });
 });
