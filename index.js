@@ -4,6 +4,7 @@
     var transmitDuration;
     var index;
     var timeoutId;
+    var paused = false;
 
     var nextBit = function() {
         var truthy = transmitData[index] === "1";
@@ -18,12 +19,15 @@
         if(timeoutId) {
             clearTimeout(timeoutId);
         }
+        transmitData = $('#transmit_data').val();
+        transmitDuration = $('#transmit_duration').val();
+        $('output[for=transmit_duration]').val(transmitDuration);
         index = 0;
         nextBit();
     };
 
     $('document').ready(function(){
-        $('body').click(function() {
+        $(document).click(function() {
             $('.controls').toggleClass('hidden');
         });
 
@@ -32,13 +36,23 @@
                 // do not hide controls when they are clicked directly
                 e.stopPropagation();
             },
-            change: function(e) {
-                transmitData = $('#transmit_data').val();
-                transmitDuration = $('#transmit_duration').val();
-                $('output[for=transmit_duration]').val(transmitDuration);
+            change: startTransmission
+        });
 
+        $('.pause').on('click', function(e) {
+            paused = !paused;
+            if(paused) {
+               if(timeoutId) {
+                    clearTimeout(timeoutId);
+                }
+            } else {
                 startTransmission();
             }
+
+            $(this).toggleClass('paused', paused);
+            e.stopPropagation();
         });
+
+        startTransmission();
     });
 })();
