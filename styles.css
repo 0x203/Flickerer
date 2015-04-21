@@ -4,9 +4,34 @@ body, html {
 }
 
 body {
+	color: black;
 	background-color: white;
 }
 
-.black {
+body.black {
+	color: white;
 	background-color: black;
+}
+
+.hidden {
+	display: none;
+}
+
+.controls {
+	margin: 100px auto;
+	width: 210px;
+}
+
+label {
+	display: block;
+	margin: 30px 0 10px;
+}
+
+textarea {
+	width: 200px;
+	height: 100px;
+}
+
+input[type=range] {
+	width: 170px;
 }

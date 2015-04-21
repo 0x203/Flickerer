@@ -1,12 +1,24 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<title>Flickering App</title>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 	<link rel="stylesheet" type="text/css" href="styles.css">
+
+	<title>Flickering App</title>
 </head>
 <body>
-	<div id="target"></div>
+	<div class="controls">
+		<h1>Flickering App</h1>
+
+		<label for="transmit_data">Data that should be transmitted:</label>
+		<textarea id="transmit_data">01</textarea>
+
+		<label for="transmit_duration">Duration of one bit in ms:</label>
+		<input type="range" min="10" max="250" value="100" id="transmit_duration">
+		<output for="transmit_duration">100</output>
+	</div>
 
 	<script type="text/javascript" src="https://code.jquery.com/jquery-2.1.3.min.js"></script>
 	<script type="text/javascript" src="index.js"></script>
