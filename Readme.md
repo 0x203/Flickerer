@@ -40,6 +40,18 @@ Add the tools and platform-tools directory to your path, e.g. put this into your
 export PATH=${PATH}:<my_directory>/platform-tools:<my_directory>/tools
 ```
 
+Switch into the phonegap folder (flickerer) and execute
+
+```
+cordova platform ls
+```
+
+If it says there are no installed platforms, execute the following, otherwise jump to the build instructions!
+
+```
+cordova platform add android
+```
+
 ## Build instructions
 
 Switch into the phonegap folder (flickerer).
