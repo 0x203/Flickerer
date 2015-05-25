@@ -13,10 +13,15 @@ body.black {
 }
 
 .controls {
-	position: absolute;
-	margin-left: 50%;
-	left: -105px;
-	width: 210px;
+	position: relative;
+	margin: 0 auto;
+	width: 50%;
+	min-width: 20em;
+}
+
+.explanation {
+	width: 100%;
+	margin: 0 auto;
 }
 
 label {
@@ -25,8 +30,8 @@ label {
 }
 
 textarea {
-	width: 200px;
-	height: 100px;
+	width: 100%;
+	height: 8em;
 }
 
 input[type=range] {
@@ -34,6 +39,7 @@ input[type=range] {
 }
 
 .pause {
+	display: block;
 	margin-top: 30px;
 	width: 200px;
 	height: 50px;
