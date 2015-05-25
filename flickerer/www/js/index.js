@@ -94,6 +94,48 @@ Transmitter = (function() {
     return Transmitter;
 })();
 
+Flashlight = (function() {
+    var switchOn;
+    var switchOff;
+    var available;
+    var activate = function(callback) {
+        if(!available) {
+            return false;
+        }
+        if(window && window.plugins && window.plugins.flashlight) {
+            window.plugins.flashlight.available(function(isAvailable) {
+                available = isAvailable;
+                if (isAvailable) {
+                    switchOn = window.plugins.flashlight.switchOn;
+                    switchOn = window.plugins.flashlight.switchOff;
+                    androidHelper();
+                }
+                callback(available);
+            });
+        }
+
+    };
+
+    var androidHelper = function() {
+        // switch off if app is not in focus anymore
+        function exitApp() {
+            navigator.app.exitApp();
+        }
+
+        document.addEventListener("backbutton", function() {
+            // pass exitApp as callbacks to the switchOff method
+            window.plugins.flashlight.switchOff(exitApp, exitApp);
+        }, false);
+    };
+
+    return {
+        activate: activate,
+        // success/error callbacks may be passed
+        switchOn: switchOn,
+        switchOff: switchOff
+    };
+})();
+
 
 (function () {
 
