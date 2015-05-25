@@ -8,7 +8,7 @@
 
 	<title>Flickering App</title>
 </head>
-<body class="gray">
+<body>
 	<div class="controls">
 		<h1>Flickering App</h1>
 
@@ -53,6 +53,17 @@
 			<label for="bit_duration">Duration of one bit in ms:</label>
 			<input type="range" min="10" max="1000" value="200" id="bit_duration">
 			<output for="bit_duration">200</output>
+		</div>
+
+		<div class="input-flashlight">
+			Use Flashlight instead of background to flicker.
+			<div class="onoffswitch">
+				<input type="checkbox" name="onoffswitch" class="onoffswitch-checkbox" id="useflashlight" checked>
+				<label class="onoffswitch-label" for="useflashlight">
+					<span class="onoffswitch-inner"></span>
+					<span class="onoffswitch-switch"></span>
+				</label>
+			</div>
 		</div>
 
 		<div>
