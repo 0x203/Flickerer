@@ -31,6 +31,13 @@ label {
 
 textarea {
 	width: 100%;
+}
+
+#initialize_pattern {
+	height: 1em;
+}
+
+#transmit_data {
 	height: 8em;
 }
 
