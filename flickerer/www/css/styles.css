@@ -51,6 +51,11 @@ textarea {
 	width: 100%;
 }
 
+body.black textarea {
+	color: white;
+	background-color: black;
+}
+
 #initialize_pattern {
 	height: 1em;
 }

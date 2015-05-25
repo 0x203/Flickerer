@@ -133,6 +133,9 @@ Transmitter = (function() {
     };
 
     var stateChange = function(newState) {
+        if(newState === transmitter.STATES.stopped) {
+            $('body').removeClass('black');
+        }
         $('body').toggleClass('gray', newState === transmitter.STATES.stopped);
         $('.input-init').toggleClass('active', newState === transmitter.STATES.initializing);
         $('.input-start').toggleClass('active', newState === transmitter.STATES.starting);
