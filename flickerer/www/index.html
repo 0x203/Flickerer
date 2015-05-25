@@ -13,9 +13,19 @@
 		<h1>Flickering App</h1>
 
 		<div class="explanation">
-			The background flickers according to the text you write in the field below.
-			Currently, only "0" and "1" are allowed.
-			Tab on the background to hide/show controls.
+			<p>
+				The background flickers according to the texts you write in the fields below.
+				The initializing pattern is repeated as long until a timeout.
+				After that, the starting-pattern will be transmitted one time.
+				Only "0" and "1" are allowed of both of them.
+			</p>
+			<p>
+				After the start pattern, the text will be transmitted.
+				Each character will be represented as the first 8 bits for the utf-16 codepoint of that charachter.
+			</p>
+			<p>
+				Tab on the background to hide/show controls.
+			</p>
 		</div>
 
 		<div class="input-init">
@@ -36,7 +46,7 @@
 
 		<div class="input-data">
 			<label for="transmit_data">Data that should be transmitted:</label>
-			<textarea id="transmit_data">011101</textarea>
+			<textarea id="transmit_data">Hello, World!</textarea>
 		</div>
 
 		<div class="input-duration">

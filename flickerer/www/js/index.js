@@ -4,10 +4,10 @@ Transmitter = (function() {
         this.notify = notify;       // function to notify state changes
 
         this.bitDuration = inputs.bitDuration;
-        this.initPattern = decodeData(inputs.initializePattern, 'binary');
+        this.initPattern = inputs.initializePattern;
         this.initDuration = inputs.initializeDuration * 1000;   // from s to ms
-        this.startPattern = decodeData(inputs.startPattern, 'binary');
-        this.dataWorkload = decodeData(inputs.transmitData, 'binary');
+        this.startPattern = inputs.startPattern;
+        this.dataWorkload = decodeData(inputs.transmitData);
 
         this.state = this.STATES.stopped;
         this.running = false;
@@ -37,18 +37,18 @@ Transmitter = (function() {
                 setTimeout(this.initialized.bind(this), this.initDuration);
                 break;
             case this.STATES.initializing:
-                this.emitBit(this.initPattern[this.cur_index]);
+                this.emitBit(this.initPattern[this.cur_index] === '1');
                 this.cur_index = (this.cur_index + 1) % this.initPattern.length;
                 break;
             case this.STATES.starting:
-                this.emitBit(this.startPattern[this.cur_index]);
+                this.emitBit(this.startPattern[this.cur_index] === '1');
                 this.cur_index += 1;
                 if(this.cur_index === this.startPattern.length) {
                     this.changeState(this.STATES.transmitting);
                 }
                 break;
             case this.STATES.transmitting:
-                this.emitBit(this.dataWorkload[this.cur_index]);
+                this.emitBit(this.dataWorkload[this.cur_index] === '1');
                 this.cur_index += 1;
                 if(this.cur_index === this.dataWorkload.length) {
                     this.changeState(this.STATES.stopped);
@@ -78,18 +78,17 @@ Transmitter = (function() {
         }
     };
 
-    var decodeData = function(data, encoding) {
-        var decoded = [];
-        if(encoding === 'binary') {
-            var len = data.length;
-            for(var i = 0; i < len; i++) {
-                decoded.push(data[i] === '1');
-            }
-        } else {
-            console.warn('Implement me!');
-            decoded = [0, 1, 0, 1, 1];
+    var decodeData = function(data) {
+        decoded = [];
+        var len = data.length;
+        var binary;
+
+        for(var i = 0; i < len; i++) {
+            // first, read utf-16 code of char, then convert it to binry number string
+            binary = data.charCodeAt(i).toString(2);
+            decoded.push('0'.repeat(8 - binary.length) + binary);
         }
-        return decoded;
+        return decoded.join();
     };
 
     return Transmitter;
