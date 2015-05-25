@@ -128,11 +128,21 @@ Flashlight = (function() {
         }, false);
     };
 
+    var toggle = function(onoff, error, success) {
+        if(available) {
+            if(onoff) {
+                switchOn(error, success);
+            } else {
+                switchOff(error, success);
+            }
+        }
+    };
+
     return {
+        inUse: false,
+        available: available,
         activate: activate,
-        // success/error callbacks may be passed
-        switchOn: switchOn,
-        switchOff: switchOff
+        toggle: toggle
     };
 })();
 
@@ -149,7 +159,11 @@ Flashlight = (function() {
     };
 
     var emitBit = function(bit) {
-        $('body').toggleClass('black', bit);
+        if(Flashlight.inUse) {
+            Flashlight.toggle(bit);
+        } else {
+            $('body').toggleClass('black', bit);
+        }
     };
 
     var dataChange = function() {
@@ -175,7 +189,7 @@ Flashlight = (function() {
     };
 
     var stateChange = function(newState) {
-        if(newState === transmitter.STATES.stopped) {
+        if(newState === transmitter.STATES.stopped || Flashlight.inUse) {
             $('body').removeClass('black');
         }
         $('body').toggleClass('gray', newState === transmitter.STATES.stopped);
@@ -184,8 +198,25 @@ Flashlight = (function() {
         $('.input-data').toggleClass('active', newState === transmitter.STATES.transmitting);
     };
 
+    var initFlashlight = function(available) {
+        if(!available) {
+            return;
+        }
+        // if available, active by default
+        Flashlight.inUse = true;
+
+        var $checkbox = $('#useflashlight');
+
+        $('.input-flashlight').removeClass('hidden');
+        $checkbox.on('change', function(e) {
+            Flashlight.inUse = $checkbox.is(':checked');
+            e.stopPropagation();
+        });
+    };
+
     $('document').ready(function(){
         dataChange();
+        Flashlight.activate(initFlashlight);
 
         $(document).click(function() {
             $('.controls').toggleClass('hidden');
