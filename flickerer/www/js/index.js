@@ -99,11 +99,15 @@ Flashlight = (function() {
     var switchOff;
     var available;
     var activate = function(callback) {
-        if(!available) {
+        alert('activate called');
+        if(available === false) {
             return false;
         }
+        alert('will check if plugin exists');
         if(window && window.plugins && window.plugins.flashlight) {
+            alert('window.plugins.flashlight exists');
             window.plugins.flashlight.available(function(isAvailable) {
+                alert('and the answer is: ' + isAvailable);
                 available = isAvailable;
                 if (isAvailable) {
                     switchOn = window.plugins.flashlight.switchOn;
@@ -112,8 +116,10 @@ Flashlight = (function() {
                 }
                 callback(available);
             });
+        } else {
+            alert('did not exist');
         }
-
+        alert('exit activate, wait for callback');
     };
 
     var androidHelper = function() {
@@ -199,6 +205,7 @@ Flashlight = (function() {
     };
 
     var initFlashlight = function(available) {
+        alert('in init flashlight: ' + available);
         if(!available) {
             return;
         }
