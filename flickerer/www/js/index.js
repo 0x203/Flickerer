@@ -12,6 +12,8 @@ Transmitter = (function() {
         this.state = this.STATES.stopped;
         this.running = false;
         this.cur_index = null;
+
+        this.selfSyncTimer = new SynchronizedTimer();
     };
 
     Transmitter.prototype.STATES = {
@@ -24,13 +26,14 @@ Transmitter = (function() {
 
     Transmitter.prototype.start = function() {
         this.changeState(this.STATES.running);
-        this.tick();
+        this.selfSyncTimer.setInterval(this.tick.bind(this), this.bitDuration);
     };
-
+    
     Transmitter.prototype.tick = function() {
         switch (this.state) {
             case this.STATES.stopped:
-                // don't set another timeout
+                // clear the ticking interval
+                this.selfSyncTimer.clearInterval();
                 return;
             case this.STATES.running:
                 this.changeState(this.STATES.initializing);
@@ -55,8 +58,6 @@ Transmitter = (function() {
                 }
                 break;
         }
-
-        this.timeoutId = setTimeout(this.tick.bind(this), this.bitDuration);
     };
 
     Transmitter.prototype.changeState = function(newState) {

@@ -9,12 +9,16 @@ function SynchronizedTimer(onError, toleratedError) {
 	// t.setInterval(function() { Do something }, 500);
 	// ...
 	// t.clearInterval();
-	
+
 	if (toleratedError == undefined) {
 		toleratedError = 0.5;
 	}
 
 	this.setInterval = function(fun, delay) {
+		if (typeof delay === "string") {
+			delay = parseFloat(delay);
+		}
+		this.stop = false;
 		var _this = this;
 		function intervalFun() {
 			var arrived = Date.now();
@@ -27,13 +31,13 @@ function SynchronizedTimer(onError, toleratedError) {
 			}
 
 			expected = Date.now() + delay - offset;
-			_this.currentTimeout = setTimeout(intervalFun, delay - offset);
+			if (!_this.stop) { setTimeout(intervalFun, delay - offset); };
 		}
 		var expected = Date.now() + delay;
-		this.currentTimeout = setTimeout(intervalFun, delay);
+		setTimeout(intervalFun, delay);
 	}
 
 	this.clearInterval = function() {
-		clearTimeout(this.currentTimeout);
+		this.stop = true;
 	}
 }
