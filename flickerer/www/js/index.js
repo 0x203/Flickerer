@@ -144,30 +144,28 @@ Transmitter = (function() {
         $('.input-data').toggleClass('active', newState === transmitter.STATES.transmitting);
     };
 
-    $('document').ready(function(){
+    $(document).ready(function(){
         dataChange();
 
-        $(document).click(function() {
+        $(document).on("click touch", function() {
             $('.controls').toggleClass('hidden');
         });
 
+        $("input, textarea, button").on("click touch", function(e) {
+            e.stopPropagation();
+        });
+
         $('.controls').on({
-            click: function(e) {
-                // do not hide controls when they are clicked directly
-                e.stopPropagation();
-            },
             change: dataChange
         });
 
         $('.start').on('click', function(e) {
             transmitter.stop();
             transmitter.start();
-            e.stopPropagation();
         });
 
         $('.stop').on('click', function(e) {
             transmitter.stop();
-            e.stopPropagation();
         });
     });
 })();
