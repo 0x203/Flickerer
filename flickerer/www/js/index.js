@@ -51,11 +51,12 @@ Transmitter = (function() {
                 }
                 break;
             case this.STATES.transmitting:
-                this.emitBit(this.dataWorkload[this.cur_index] === '1');
-                this.cur_index += 1;
                 if(this.cur_index === this.dataWorkload.length) {
                     this.changeState(this.STATES.stopped);
+                    break;
                 }
+                this.emitBit(this.dataWorkload[this.cur_index] === '1');
+                this.cur_index += 1;
                 break;
         }
     };
@@ -89,7 +90,7 @@ Transmitter = (function() {
             binary = data.charCodeAt(i).toString(2);
             decoded.push('0'.repeat(8 - binary.length) + binary);
         }
-        return decoded.join();
+        return decoded.join("");
     };
 
     return Transmitter;
@@ -108,7 +109,7 @@ Transmitter = (function() {
     };
 
     var emitBit = function(bit) {
-        $('body').toggleClass('black', bit);
+        $('body').toggleClass('black', !bit);
     };
 
     var dataChange = function() {
