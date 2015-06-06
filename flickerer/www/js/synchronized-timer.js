@@ -22,8 +22,6 @@ function SynchronizedTimer(onError, toleratedError) {
 		var _this = this;
 		function intervalFun() {
 			var arrived = Date.now();
-			
-			fun();
 
 			var offset = arrived - expected;
 			if (offset > delay * toleratedError && typeof onError === "function") {
@@ -31,7 +29,10 @@ function SynchronizedTimer(onError, toleratedError) {
 			}
 
 			expected = Date.now() + delay - offset;
-			if (!_this.stop) { setTimeout(intervalFun, delay - offset); };
+			if (!_this.stop) {
+				setTimeout(intervalFun, delay - offset);
+				fun();
+			};
 		}
 		var expected = Date.now() + delay;
 		setTimeout(intervalFun, delay);

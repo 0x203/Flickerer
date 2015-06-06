@@ -29,7 +29,12 @@ Transmitter = (function() {
         this.selfSyncTimer.setInterval(this.tick.bind(this), this.bitDuration);
     };
     
+    time = Date.now()
+    lastTime = Date.now()
     Transmitter.prototype.tick = function() {
+        time = Date.now();
+        console.debug(lastTime - time);
+        lastTime = time;
         switch (this.state) {
             case this.STATES.stopped:
                 // clear the ticking interval
@@ -113,6 +118,7 @@ Transmitter = (function() {
     };
 
     var dataChange = function() {
+        console.log("change");
         readInputs();
         adjustOutputs();
         if(transmitter) {
@@ -156,7 +162,8 @@ Transmitter = (function() {
         });
 
         $('.controls').on({
-            change: dataChange
+            change: dataChange,
+            input: dataChange
         });
 
         $('.start').on('click', function(e) {
