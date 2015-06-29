@@ -8,6 +8,10 @@ Hamming = (function() {
     var  SyndromeEditWindow = null;
     var  numberOfSyndromeRows = 0;
     var  numberOfParityBits = 0;
+    var lastMatrixParams = {
+        useExtraParityBit: undefined,
+        inputDataLength: undefined
+    };
 
     //*************************************************************************
     //
@@ -263,9 +267,17 @@ Hamming = (function() {
     //  RETURNS : none
     //
     //*************************************************************************
-    function createSyndromeAndParityMatrices(useExtraParityBit,
-                            inputDataLength)
+    function createSyndromeAndParityMatrices(useExtraParityBit, inputDataLength)
     {
+        if (lastMatrixParams[useExtraParityBit] === useExtraParityBit &
+            lastMatrixParams[inputDataLength] === inputDataLength) {
+            // everything should be still valid
+            return;
+        } else {
+            // save values for next round
+            lastMatrixParams[useExtraParityBit] = useExtraParityBit;
+            lastMatrixParams[inputDataLength] = inputDataLength;
+        }
         var         i = 0,
                 j = 0;
         var     syndrome = 1;
@@ -377,9 +389,13 @@ Hamming = (function() {
         parityMatrix = null;
         numberOfSyndromeRows = 0;
         numberOfParityBits = 0;
+        lastMatrixParams = {
+            useExtraParityBit: undefined,
+            inputDataLength: undefined
+        };
     }
 
-    function encode(binaryString, useExtraParityBit)
+    function encodeDynamicSize(binaryString, useExtraParityBit)
     {
         if (!numberIsValid(binaryString, 2)) {
             console.error('Invlaid binary string!');
@@ -437,6 +453,39 @@ Hamming = (function() {
         //  Fill in the receivedDataTextbox with the codeword
         return binaryArrayToString(dataArray) + inputDataParity;
     }
+
+    var repeatString = function (pattern, count) {
+        // http://stackoverflow.com/a/5450113/2148890
+        var result = '';
+        while (count > 1) {
+            if (count & 1) result += pattern;
+            count >>= 1;
+            pattern += pattern;
+        }
+        return result + pattern;
+    };
+
+    var encode = function(binaryString, chunkSize, useExtraParityBit) {
+        if(!chunkSize) {
+            // treat it like a single chunk if no size given
+            chunkSize = binaryString.length;
+        }
+        var chunkCount = Math.ceil(binaryString.length / chunkSize);
+        var chunk;
+        var chunkEncoded;
+        var complete = "";
+        for(var i = 0; i < chunkCount; i++) {
+            chunk = binaryString.slice(i * chunkSize, (i + 1) * chunkSize);
+            if(chunk.length < chunkSize) {
+                chunk = chunk + repeatString('0', chunkSize - chunk.length);
+            }
+            chunkEncoded = encodeDynamicSize(chunk, useExtraParityBit);
+            //console.log('Current chunk: ' + chunk + '; encoded: ' + chunkEncoded);
+            complete = complete + chunkEncoded;
+        }
+
+        return complete;
+    };
 
     var decode = function(hammingString) {
         console.error('Not implemented');
