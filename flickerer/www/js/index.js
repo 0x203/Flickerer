@@ -8,6 +8,12 @@ Transmitter = (function() {
         this.initDuration = inputs.initializeDuration * 1000;   // from s to ms
         this.startPattern = inputs.startPattern;
         this.dataWorkload = decodeData(inputs.transmitData);
+        if (inputs.useHamming) {
+            // options for: 8,4 Hamming; 4 data bits with 4 paritiy bits
+            var chunkSize = 4;
+            var useParityBit = true;
+            this.dataWorkload = Hamming.encode(this.dataWorkload, chunkSize, useParityBit);
+        }
 
         this.state = this.STATES.stopped;
         this.running = false;
@@ -28,9 +34,9 @@ Transmitter = (function() {
         this.changeState(this.STATES.running);
         this.selfSyncTimer.setInterval(this.tick.bind(this), this.bitDuration);
     };
-    
-    time = Date.now()
-    lastTime = Date.now()
+
+    time = Date.now();
+    lastTime = Date.now();
     Transmitter.prototype.tick = function() {
         time = Date.now();
         console.debug(lastTime - time);
@@ -110,6 +116,7 @@ Transmitter = (function() {
         initializeDuration: null,
         startPattern: null,
         transmitData: null,
+        useHamming: false,
         bitDuration: null
     };
 
@@ -133,6 +140,7 @@ Transmitter = (function() {
         inputState.startPattern = $('#start_pattern').val();
         inputState.transmitData = $('#transmit_data').val();
         inputState.bitDuration = $('#bit_duration').val();
+        inputState.useHamming = $('#use_hamming').prop('checked');
     };
 
     var adjustOutputs = function() {
