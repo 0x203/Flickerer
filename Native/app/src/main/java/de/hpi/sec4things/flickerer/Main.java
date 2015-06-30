@@ -1,6 +1,7 @@
 package de.hpi.sec4things.flickerer;
 
 import de.hpi.sec4things.flickerer.transmission.Emitter;
+import de.hpi.sec4things.flickerer.transmission.Transmitter;
 import de.hpi.sec4things.flickerer.util.SystemUiHider;
 
 import android.annotation.TargetApi;
@@ -11,6 +12,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.EditText;
 
 
 /**
@@ -49,6 +51,8 @@ public class Main extends Activity implements Emitter{
     private SystemUiHider mSystemUiHider;
 
     private View fullscreenBackground ;
+    private EditText edit_data;
+    private Transmitter transmitter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,6 +63,8 @@ public class Main extends Activity implements Emitter{
         final View controlsView = findViewById(R.id.fullscreen_content_controls);
         final View contentView = findViewById(R.id.fullscreen_content);
         fullscreenBackground = (View) controlsView.getParent();
+        edit_data = (EditText) findViewById(R.id.edit_data);
+        transmitter = new Transmitter(this);
 
         // Set up an instance of SystemUiHider to control the system UI for
         // this activity.
@@ -164,9 +170,26 @@ public class Main extends Activity implements Emitter{
         mHideHandler.postDelayed(mHideRunnable, delayMillis);
     }
 
+    public void sendData(View view) {
+        // Send Button was clicked
+        String data = edit_data.getText().toString();
+        transmitter.transmit(data);
+    }
+
+    public void stopSending(View view) {
+        // Stop button was clicked
+        transmitter.stop();
+    }
+
     @Override
-    public void emitBit(boolean bit) {
+    public void emitBit(final boolean bit) {
         // TODO: delete me when using flashlight (dont forget "implements Emitter"!)
-        fullscreenBackground.setBackgroundColor(bit ? Color.WHITE : Color.BLACK);
+        runOnUiThread(new Runnable() {
+            // this is needed, because we are called from a background thread which can't update the view
+            @Override
+            public void run() {
+                fullscreenBackground.setBackgroundColor(bit ? Color.WHITE : Color.BLACK);
+            }
+        });
     }
 }
