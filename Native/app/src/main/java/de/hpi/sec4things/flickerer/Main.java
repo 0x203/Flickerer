@@ -6,13 +6,18 @@ import de.hpi.sec4things.flickerer.util.SystemUiHider;
 
 import android.annotation.TargetApi;
 import android.app.Activity;
+import android.content.Context;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
+import android.widget.TextView;
 
 
 /**
@@ -60,11 +65,26 @@ public class Main extends Activity implements Emitter{
 
         setContentView(R.layout.activity_main);
 
+        // set variables
         final View controlsView = findViewById(R.id.fullscreen_content_controls);
         final View contentView = findViewById(R.id.fullscreen_content);
         fullscreenBackground = (View) controlsView.getParent();
         edit_data = (EditText) findViewById(R.id.edit_data);
         transmitter = new Transmitter(this);
+
+        // Set up listener for send event
+        edit_data.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                boolean handled = false;
+                if (actionId == EditorInfo.IME_ACTION_SEND) {
+                    hideKeyboard();
+                    handled = true;
+                    sendData(v);
+                }
+                return handled;
+            }
+        });
 
         // Set up an instance of SystemUiHider to control the system UI for
         // this activity.
@@ -171,7 +191,7 @@ public class Main extends Activity implements Emitter{
     }
 
     public void sendData(View view) {
-        // Send Button was clicked
+        // either sendButton was clicked or send action from text field was triggered
         String data = edit_data.getText().toString();
         transmitter.transmit(data);
     }
@@ -179,6 +199,16 @@ public class Main extends Activity implements Emitter{
     public void stopSending(View view) {
         // Stop button was clicked
         transmitter.stop();
+    }
+
+    private void hideKeyboard() {
+        // http://stackoverflow.com/a/7696791/2148890
+        // Check if no view has focus:
+        View view = this.getCurrentFocus();
+        if (view != null) {
+            InputMethodManager inputManager = (InputMethodManager) this.getSystemService(Context.INPUT_METHOD_SERVICE);
+            inputManager.hideSoftInputFromWindow(view.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
+        }
     }
 
     @Override
