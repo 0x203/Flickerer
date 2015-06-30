@@ -7,9 +7,10 @@ import java.util.TimerTask;
 
 public class Transmitter {
     private final static int BIT_LENGTH = 60;   // ms
-    private final static int START_DELAY = 60;   // ms
+    private final static int START_DELAY = 0;   // ms
     private final static int INIT_DUR = 10;     // s
-    private final static String START_PATTERN = "01101011";
+    private final static boolean[] START_PATTERN =
+            {false, true, true, false, true, false, true, true}; // "01101011";
 
 
     private Set<Timer> timers;
@@ -25,13 +26,8 @@ public class Transmitter {
         // TODO: encode data
         // TODO: assure there is no old timer running
 
-        // toggle zero and one pretty fast
+        // start with the sending process
         initialize();
-    }
-
-    public void initialized() {
-        emitter.emitBit(true);
-        System.out.println("Initialized!");
     }
 
     private void initialize() {
@@ -55,10 +51,35 @@ public class Transmitter {
                 initTimer.cancel();
                 timers.remove(initTimer);
                 timers.remove(initStopTimer);
-                initialized();
+                sendStartPattern();
             }
         }, INIT_DUR * 1000);
         timers.add(initStopTimer);
+    }
+
+    public void sendStartPattern() {
+        System.out.println("Initialized!");
+        final Timer startTimer = new Timer();
+        timers.add(startTimer);
+        startTimer.scheduleAtFixedRate(new TimerTask() {
+            int current_pos = 0;
+
+            @Override
+            public void run() {
+                emitter.emitBit(START_PATTERN[current_pos++]);
+                if (current_pos == START_PATTERN.length) {
+                    startTimer.cancel();
+                    timers.remove(startTimer);
+                    sendData();
+                }
+            }
+        }, START_DELAY, BIT_LENGTH);
+        emitter.emitBit(true);
+    }
+
+    private void sendData() {
+        System.out.println("Can send data now!");
+        // TODO: implement me!
     }
 
     public void stop() {
