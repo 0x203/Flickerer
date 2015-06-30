@@ -1,6 +1,7 @@
 <resources>
     <string name="app_name">Flickerer</string>
 
-    <string name="dummy_button">Dummy Button</string>
-    <string name="dummy_content">DUMMY\nCONTENT</string>
+    <string name="edit_data">Enter data to be transmitted</string>
+    <string name="button_start">Start</string>
+    <string name="button_stop">Stop</string>
 </resources>
