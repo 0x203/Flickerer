@@ -1,9 +1,11 @@
 package de.hpi.sec4things.flickerer;
 
+import de.hpi.sec4things.flickerer.transmission.Emitter;
 import de.hpi.sec4things.flickerer.util.SystemUiHider;
 
 import android.annotation.TargetApi;
 import android.app.Activity;
+import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -17,7 +19,7 @@ import android.view.View;
  *
  * @see SystemUiHider
  */
-public class Main extends Activity {
+public class Main extends Activity implements Emitter{
     /**
      * Whether or not the system UI should be auto-hidden after
      * {@link #AUTO_HIDE_DELAY_MILLIS} milliseconds.
@@ -46,6 +48,8 @@ public class Main extends Activity {
      */
     private SystemUiHider mSystemUiHider;
 
+    private View fullscreenBackground ;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -54,6 +58,7 @@ public class Main extends Activity {
 
         final View controlsView = findViewById(R.id.fullscreen_content_controls);
         final View contentView = findViewById(R.id.fullscreen_content);
+        fullscreenBackground = (View) controlsView.getParent();
 
         // Set up an instance of SystemUiHider to control the system UI for
         // this activity.
@@ -157,5 +162,11 @@ public class Main extends Activity {
     private void delayedHide(int delayMillis) {
         mHideHandler.removeCallbacks(mHideRunnable);
         mHideHandler.postDelayed(mHideRunnable, delayMillis);
+    }
+
+    @Override
+    public void emitBit(boolean bit) {
+        // TODO: delete me when using flashlight (dont forget "implements Emitter"!)
+        fullscreenBackground.setBackgroundColor(bit ? Color.WHITE : Color.BLACK);
     }
 }
