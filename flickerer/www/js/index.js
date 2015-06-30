@@ -1,4 +1,46 @@
 Transmitter = (function() {
+    function encodeHamming(input) {
+        console.log("new hamming");
+        function mult(dataArray) {
+            var G = [
+                [1,1,0,1],
+                [1,0,1,1],
+                [1,0,0,0],
+                [0,1,1,1],
+                [0,1,0,0],
+                [0,0,1,0],
+                [0,0,0,1]
+            ]
+
+            result = [];
+            for (var i = 0; i < G.length; i++) {
+                var sum = 0;
+                for (var j = 0; j < G[i].length; j++) {
+                    sum += G[i][j] * dataArray[j];
+                }
+                result.push(sum % 2);
+            }
+
+            return result;
+        }
+
+        var hamming = [];
+        for (var i = 0; i < input.length; i+=4) {
+            var chunkArr = input.substring(i, i+4).split('').map(function(el) {
+                return parseInt(el);
+            });
+
+            var hammingChunk = mult(chunkArr);
+            // add parity bit
+            var parity = hammingChunk.reduce(function(sum, val) { return sum + val; }, 0) % 2;
+            hammingChunk = hammingChunk.join('') + parity;
+            
+            hamming.push(hammingChunk);
+        }
+
+        return hamming.join('');
+    }
+
     var Transmitter = function(inputs, emitBit, notify){
         this.emitBit = emitBit;     // function to output one bit
         this.notify = notify;       // function to notify state changes
@@ -12,7 +54,7 @@ Transmitter = (function() {
             // options for: 8,4 Hamming; 4 data bits with 4 paritiy bits
             var chunkSize = 4;
             var useParityBit = true;
-            this.dataWorkload = Hamming.encode(this.dataWorkload, chunkSize, useParityBit);
+            this.dataWorkload = encodeHamming(this.dataWorkload);
         }
 
         this.state = this.STATES.stopped;
