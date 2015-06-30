@@ -61,7 +61,14 @@ Transmitter = (function() {
         this.running = false;
         this.cur_index = null;
 
-        this.selfSyncTimer = new SynchronizedTimer();
+        _this = this;
+        var errorHandler = function(offset) {
+            _this.selfSyncTimer.clearInterval();
+            _this.stop();
+            alert("Unfortunately a timer delay of " + offset + "ms was caused, please restart the initialization!");
+        };
+
+        this.selfSyncTimer = new SynchronizedTimer(errorHandler, 0.45);
     };
 
     Transmitter.prototype.STATES = {
@@ -77,12 +84,8 @@ Transmitter = (function() {
         this.selfSyncTimer.setInterval(this.tick.bind(this), this.bitDuration);
     };
 
-    time = Date.now();
-    lastTime = Date.now();
     Transmitter.prototype.tick = function() {
-        time = Date.now();
-        console.debug(lastTime - time);
-        lastTime = time;
+
         switch (this.state) {
             case this.STATES.stopped:
                 // clear the ticking interval
@@ -167,7 +170,6 @@ Transmitter = (function() {
     };
 
     var dataChange = function() {
-        console.log("change");
         readInputs();
         adjustOutputs();
         if(transmitter) {
