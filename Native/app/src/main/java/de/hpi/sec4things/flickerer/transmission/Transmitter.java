@@ -1,9 +1,11 @@
 package de.hpi.sec4things.flickerer.transmission;
 
-import java.util.HashSet;
-import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
+
+enum TransmitterState {
+    STOPPED, INITIALIZING, STARTING, TRANSMITTING
+}
 
 public class Transmitter {
     private final static int BIT_LENGTH = 60;   // ms
@@ -13,79 +15,105 @@ public class Transmitter {
             {false, true, true, false, true, false, true, true}; // "01101011";
 
 
-    private Set<Timer> timers;
+    private Timer timer;
+    private Timer initTimer;
     private Emitter emitter;
+    private TransmitterState state = TransmitterState.STOPPED;
+    private boolean currentInitBit = true;
+    private int currentIndex;
 
 
     public Transmitter(final Emitter emitter) {
         this.emitter = emitter;
-        timers = new HashSet<>(3);
     }
 
     public void transmit(final String data) {
         // TODO: encode data
         // TODO: assure there is no old timer running
 
-        // start with the sending process
-        initialize();
-    }
+        if (state != TransmitterState.STOPPED) {
+            System.out.println("WARNING: Transmitter not yet finished, but new tranimssion started");
+        }
+        changeState(TransmitterState.INITIALIZING);
+        timer = new Timer();
+        initTimer = new Timer();
 
-    private void initialize() {
-        // create timer for toggling output
-        final Timer initTimer = new Timer();
-        initTimer.scheduleAtFixedRate(new TimerTask() {
-            boolean current_bit = false;
+        // call tick with a fixed period
+        timer.scheduleAtFixedRate(new TimerTask() {
             @Override
             public void run() {
-                emitter.emitBit(current_bit);
-                current_bit = !current_bit;
+                tick();
             }
         }, START_DELAY, BIT_LENGTH);
-        timers.add(initTimer);
 
-        // create timer for stopping the initialization
-        final Timer initStopTimer = new Timer();
-        initStopTimer.schedule(new TimerTask() {
+        // stop initialization phase after timeout
+        initTimer.schedule(new TimerTask() {
             @Override
             public void run() {
-                initTimer.cancel();
-                timers.remove(initTimer);
-                timers.remove(initStopTimer);
-                sendStartPattern();
+                initialized();
             }
         }, INIT_DUR * 1000);
-        timers.add(initStopTimer);
     }
 
-    public void sendStartPattern() {
-        System.out.println("Initialized!");
-        final Timer startTimer = new Timer();
-        timers.add(startTimer);
-        startTimer.scheduleAtFixedRate(new TimerTask() {
-            int current_pos = 0;
-
-            @Override
-            public void run() {
-                emitter.emitBit(START_PATTERN[current_pos++]);
-                if (current_pos == START_PATTERN.length) {
-                    startTimer.cancel();
-                    timers.remove(startTimer);
-                    sendData();
+    private void tick() {
+        switch (state) {
+            case STOPPED:
+                if(timer != null) {
+                    try {
+                        timer.cancel();
+                    } catch (Exception e) {
+                        // already cancled
+                        timer = null;
+                    }
                 }
-            }
-        }, START_DELAY, BIT_LENGTH);
-        emitter.emitBit(true);
+                break;
+            case INITIALIZING:
+                emitter.emitBit(currentInitBit);
+                currentInitBit = !currentInitBit;
+                break;
+            case STARTING:
+                emitter.emitBit(START_PATTERN[currentIndex++]);
+                if (currentIndex == START_PATTERN.length) {
+                    changeState(TransmitterState.TRANSMITTING);
+                }
+                break;
+            case TRANSMITTING:
+                // TODO: implement me
+                System.out.println("Can send data now!");
+                currentIndex++;
+                if (currentIndex == 3) {
+                    changeState(TransmitterState.STOPPED);
+                }
+                break;
+        }
     }
 
-    private void sendData() {
-        System.out.println("Can send data now!");
-        // TODO: implement me!
+    private void changeState(TransmitterState newState) {
+        if (state != newState) {
+            state = newState;
+            currentIndex = 0;
+            // TODO: notify ui to update itself
+        }
+    }
+
+    private void initialized() {
+
+        changeState(TransmitterState.STARTING);
     }
 
     public void stop() {
-        for (Timer timer: timers) {
+        changeState(TransmitterState.STOPPED);
+        try {
             timer.cancel();
+        } catch (Exception e) {
+            ;
         }
-        timers.clear();
+        try {
+            initTimer.cancel();
+        } catch (Exception e) {
+            ;
+        }
+        timer = null;
+        initTimer = null;
     }
 }
