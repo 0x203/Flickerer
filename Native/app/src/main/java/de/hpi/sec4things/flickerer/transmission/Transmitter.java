@@ -1,5 +1,6 @@
 package de.hpi.sec4things.flickerer.transmission;
 
+import java.io.UnsupportedEncodingException;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -21,6 +22,7 @@ public class Transmitter {
     private TransmitterState state = TransmitterState.STOPPED;
     private boolean currentInitBit = true;
     private int currentIndex;
+    private byte[] binaryData;
 
 
     public Transmitter(final Emitter emitter) {
@@ -28,7 +30,12 @@ public class Transmitter {
     }
 
     public void transmit(final String data) {
-        // TODO: encode data
+        try {
+            binaryData = data.getBytes( "UTF-8"); // or use "US-ASCII"?
+        } catch (UnsupportedEncodingException e) {
+            // TODO: show error
+            return;
+        }
         // TODO: assure there is no old timer running
 
         if (state != TransmitterState.STOPPED) {
@@ -78,12 +85,11 @@ public class Transmitter {
                 }
                 break;
             case TRANSMITTING:
-                // TODO: implement me
-                System.out.println("Can send data now!");
-                currentIndex++;
-                if (currentIndex == 3) {
+                if (currentIndex == binaryData.length * 8) {
                     changeState(TransmitterState.STOPPED);
                 }
+                emitter.emitBit(isDataBitSet());
+                currentIndex++;
                 break;
         }
     }
@@ -99,6 +105,13 @@ public class Transmitter {
     private void initialized() {
 
         changeState(TransmitterState.STARTING);
+    }
+
+    private boolean isDataBitSet() {
+        int index = currentIndex / 8;  // Get the index of the array for the byte with this bit
+        int bitPosition = currentIndex % 8;  // Position of this bit in a byte
+
+        return (binaryData[index] >> bitPosition & 1) == 1;
     }
 
     public void stop() {
