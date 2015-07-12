@@ -1,6 +1,5 @@
 Transmitter = (function() {
     function encodeHamming(input) {
-        console.log("new hamming");
         function mult(dataArray) {
             var G = [
                 [1,1,0,1],
