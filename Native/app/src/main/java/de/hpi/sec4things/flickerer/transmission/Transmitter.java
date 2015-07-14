@@ -9,7 +9,7 @@ enum TransmitterState {
 }
 
 public class Transmitter {
-    private final static int BIT_LENGTH = 78;   // ms
+    private final static int BIT_LENGTH = 125;   // ms
     private final static int START_DELAY = 0;   // ms
     private final static int INIT_DUR = 10;     // s
     private final static boolean[] START_PATTERN =
