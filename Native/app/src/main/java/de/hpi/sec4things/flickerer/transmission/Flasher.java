@@ -18,12 +18,14 @@ public class Flasher implements Emitter{
         p.setFlashMode(Camera.Parameters.FLASH_MODE_TORCH);
         camera.setParameters(p);
         camera.startPreview();
+        isOn = true;
     }
 
     private void turnOff() {
         p.setFlashMode(Camera.Parameters.FLASH_MODE_OFF);
         camera.setParameters(p);
         camera.stopPreview();
+        isOn = false;
     }
 
     @Override
