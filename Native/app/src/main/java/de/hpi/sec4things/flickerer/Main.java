@@ -1,12 +1,14 @@
 package de.hpi.sec4things.flickerer;
 
 import de.hpi.sec4things.flickerer.transmission.Emitter;
+import de.hpi.sec4things.flickerer.transmission.Flasher;
 import de.hpi.sec4things.flickerer.transmission.Transmitter;
 import de.hpi.sec4things.flickerer.util.SystemUiHider;
 
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Context;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
@@ -46,6 +48,12 @@ public class Main extends Activity implements Emitter{
     private static final boolean TOGGLE_ON_CLICK = false;
 
     /**
+     * Whether to use the flashlight instead of display background to flicker, if available
+     */
+    private static final boolean USE_FLASHLIGHT = true;
+
+
+    /**
      * The flags to pass to {@link SystemUiHider#getInstance}.
      */
     private static final int HIDER_FLAGS = SystemUiHider.FLAG_HIDE_NAVIGATION;
@@ -70,7 +78,10 @@ public class Main extends Activity implements Emitter{
         final View contentView = findViewById(R.id.fullscreen_content);
         fullscreenBackground = (View) controlsView.getParent();
         edit_data = (EditText) findViewById(R.id.edit_data);
-        transmitter = new Transmitter(this);
+
+        final Emitter emitter = (USE_FLASHLIGHT & this.getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA)) ?
+                new Flasher() : this;
+        transmitter = new Transmitter(emitter);
 
         // Set up listener for send event
         edit_data.setOnEditorActionListener(new TextView.OnEditorActionListener() {
