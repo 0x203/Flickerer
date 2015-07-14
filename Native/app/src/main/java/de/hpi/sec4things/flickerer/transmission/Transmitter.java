@@ -9,7 +9,7 @@ enum TransmitterState {
 }
 
 public class Transmitter {
-    private final static int BIT_LENGTH = 60;   // ms
+    private final static int BIT_LENGTH = 78;   // ms
     private final static int START_DELAY = 0;   // ms
     private final static int INIT_DUR = 10;     // s
     private final static boolean[] START_PATTERN =
@@ -37,6 +37,13 @@ public class Transmitter {
             return;
         }
         // TODO: assure there is no old timer running
+        /*
+        // print bytes
+        System.out.println(data);
+        for (byte b : binaryData) {
+            System.out.println(String.format("%8s", Integer.toBinaryString(b & 0xFF)).replace(' ', '0'));
+        }
+        */
 
         if (state != TransmitterState.STOPPED) {
             System.out.println("WARNING: Transmitter not yet finished, but new tranimssion started");
@@ -109,7 +116,7 @@ public class Transmitter {
 
     private boolean isDataBitSet() {
         int index = currentIndex / 8;  // Get the index of the array for the byte with this bit
-        int bitPosition = currentIndex % 8;  // Position of this bit in a byte
+        int bitPosition = 7 - currentIndex % 8;  // Position of this bit in a byte
 
         return (binaryData[index] >> bitPosition & 1) == 1;
     }
