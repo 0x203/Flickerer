@@ -169,8 +169,8 @@ class HammingEncoder {
     public static byte[] encode(byte[] input) {
         byte[] output = new byte[input.length * 2];
         for (int i = 0; i < input.length; i++) {
-            output[i] = encodeHalfByte((char) (input[i] >> 4));
-            output[i + 1] = encodeHalfByte((char) (input[i] & 0x0F));
+            output[2 * i] = encodeHalfByte((char) (input[i] >> 4));
+            output[2 * i + 1] = encodeHalfByte((char) (input[i] & 0x0F));
         }
         return output;
     }
