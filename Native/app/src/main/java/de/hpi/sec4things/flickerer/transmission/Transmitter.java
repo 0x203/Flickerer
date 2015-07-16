@@ -90,6 +90,7 @@ public class Transmitter {
                         // already cancled
                         timer = null;
                     }
+                    emitter.emitBit(false);
                 }
                 break;
             case INITIALIZING:
