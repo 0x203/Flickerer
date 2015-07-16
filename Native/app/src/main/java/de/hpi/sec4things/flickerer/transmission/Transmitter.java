@@ -15,7 +15,7 @@ public class Transmitter {
     private final static boolean[] START_PATTERN =
             {false, true, true, false, true, false, true, true}; // "01101011";
     private final static boolean[] START_PATTERN_HAMMING =
-            {true, false, false, true, false, true, false, false}; // "10010100";
+            {false, true, true, false, true, false, false, false}; // "01101000";
 
 
     private Timer timer;
