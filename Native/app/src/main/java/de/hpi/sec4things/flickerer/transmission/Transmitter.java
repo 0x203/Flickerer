@@ -43,16 +43,9 @@ public class Transmitter {
             return;
         }
 
-        for (byte b : binaryData) {
-            System.out.println(String.format("%8s", Integer.toBinaryString(b & 0xFF)).replace(' ', '0'));
-        }
         if(encodeWithHamming) {
             binaryData = HammingEncoder.encode(binaryData);
             startPattern = START_PATTERN_HAMMING;
-        }
-        System.out.println("Again with Hamming");
-        for (byte b : binaryData) {
-            System.out.println(String.format("%8s", Integer.toBinaryString(b & 0xFF)).replace(' ', '0'));
         }
 
         // TODO: assure there is no old timer running
