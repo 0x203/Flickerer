@@ -14,19 +14,25 @@ public class Transmitter {
     private final static int INIT_DUR = 10;     // s
     private final static boolean[] START_PATTERN =
             {false, true, true, false, true, false, true, true}; // "01101011";
+    private final static boolean[] START_PATTERN_HAMMING =
+            {false, true, true, false, true, false, false, false}; // "01101000";
 
 
     private Timer timer;
     private Timer initTimer;
-    private Emitter emitter;
+    private final Emitter emitter;
+    private final boolean encodeWithHamming;
+
     private TransmitterState state = TransmitterState.STOPPED;
     private boolean currentInitBit = true;
     private int currentIndex;
     private byte[] binaryData;
+    private boolean[] startPattern = START_PATTERN;
 
 
-    public Transmitter(final Emitter emitter) {
+    public Transmitter(final Emitter emitter, final boolean encodeWithHamming) {
         this.emitter = emitter;
+        this.encodeWithHamming = encodeWithHamming;
     }
 
     public void transmit(final String data) {
@@ -36,10 +42,15 @@ public class Transmitter {
             // TODO: show error
             return;
         }
+
+        if(encodeWithHamming) {
+            binaryData = HammingEncoder.encode(binaryData);
+            startPattern = START_PATTERN_HAMMING;
+        }
+
         // TODO: assure there is no old timer running
         /*
         // print bytes
-        System.out.println(data);
         for (byte b : binaryData) {
             System.out.println(String.format("%8s", Integer.toBinaryString(b & 0xFF)).replace(' ', '0'));
         }
@@ -86,8 +97,8 @@ public class Transmitter {
                 currentInitBit = !currentInitBit;
                 break;
             case STARTING:
-                emitter.emitBit(START_PATTERN[currentIndex++]);
-                if (currentIndex == START_PATTERN.length) {
+                emitter.emitBit(startPattern[currentIndex++]);
+                if (currentIndex == startPattern.length) {
                     changeState(TransmitterState.TRANSMITTING);
                 }
                 break;
@@ -137,3 +148,48 @@ public class Transmitter {
         initTimer = null;
     }
 }
+
+class HammingEncoder {
+    private static char[] G = {
+            0b1101,
+            0b1011,
+            0b1000,
+            0b0111,
+            0b0100,
+            0b0010,
+            0b0001};
+
+    public static byte[] encode(byte[] input) {
+        byte[] output = new byte[input.length * 2];
+        for (int i = 0; i < input.length; i++) {
+            output[2 * i] = encodeHalfByte((char) (input[i] >> 4));
+            output[2 * i + 1] = encodeHalfByte((char) (input[i] & 0x0F));
+        }
+        return output;
+    }
+
+    private static byte encodeHalfByte(char c) {
+        char result = 0;
+        char bitmask = 1 << 7;
+        for (int i = 0; i < G.length; i++) {
+            if (hasOddParity(G[i] & c)) {
+                result = (char) (result | bitmask);
+            }
+            bitmask = (char) (bitmask >> 1);
+        }
+        if (hasOddParity(result)) {
+            result = (char) (result | 1);
+        }
+
+        return (byte) result;
+    }
+
+    private static boolean hasOddParity(final int bb) {
+        // http://www.mindprod.com/jgloss/parity.html
+        int parity = bb ^ ( bb >> 4 );
+        parity ^= parity >> 2;
+        parity ^= parity >> 1;
+        return ( parity & 1 ) != 0;
+    }
+}
+

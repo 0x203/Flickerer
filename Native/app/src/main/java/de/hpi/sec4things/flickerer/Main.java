@@ -52,6 +52,11 @@ public class Main extends Activity implements Emitter{
      */
     private static final boolean USE_FLASHLIGHT = true;
 
+    /**
+     * Whether or not to encode date with Hamming code
+     */
+    private static final boolean USE_HAMMING = true;
+
 
     /**
      * The flags to pass to {@link SystemUiHider#getInstance}.
@@ -81,7 +86,7 @@ public class Main extends Activity implements Emitter{
 
         final Emitter emitter = (USE_FLASHLIGHT & this.getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA)) ?
                 new Flasher() : this;
-        transmitter = new Transmitter(emitter);
+        transmitter = new Transmitter(emitter, USE_HAMMING);
 
         // Set up listener for send event
         edit_data.setOnEditorActionListener(new TextView.OnEditorActionListener() {
