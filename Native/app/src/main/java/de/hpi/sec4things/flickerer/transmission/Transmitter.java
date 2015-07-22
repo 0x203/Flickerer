@@ -13,7 +13,7 @@ enum TransmitterState {
 
 public class Transmitter {
     private final static int BIT_LENGTH_MULTIPLIER = 1000000; // nano
-    private static long BIT_LENGTH = (long) (31.25 * BIT_LENGTH_MULTIPLIER);   // nano seconds
+    private static long BIT_LENGTH = (long) (125 * BIT_LENGTH_MULTIPLIER);   // nano seconds
     private final static int START_DELAY = 0;   // ms
     private final static int INIT_DUR = 10;     // s
     private final static boolean[] START_PATTERN =
