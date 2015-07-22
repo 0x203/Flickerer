@@ -19,6 +19,7 @@ import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
+import android.widget.SeekBar;
 import android.widget.TextView;
 
 
@@ -50,7 +51,7 @@ public class Main extends Activity implements Emitter{
     /**
      * Whether to use the flashlight instead of display background to flicker, if available
      */
-    private static final boolean USE_FLASHLIGHT = true;
+    private static final boolean USE_FLASHLIGHT = false;
 
     /**
      * Whether or not to encode date with Hamming code
@@ -63,6 +64,8 @@ public class Main extends Activity implements Emitter{
      */
     private static final int HIDER_FLAGS = SystemUiHider.FLAG_HIDE_NAVIGATION;
 
+    private static final double PERIOD_LENGTH = 7.8125;
+
     /**
      * The instance of the {@link SystemUiHider} for this activity.
      */
@@ -70,6 +73,8 @@ public class Main extends Activity implements Emitter{
 
     private View fullscreenBackground ;
     private EditText edit_data;
+    private TextView seekBarText;
+    private SeekBar seekBar;
     private Transmitter transmitter;
 
     @Override
@@ -83,6 +88,8 @@ public class Main extends Activity implements Emitter{
         final View contentView = findViewById(R.id.fullscreen_content);
         fullscreenBackground = (View) controlsView.getParent();
         edit_data = (EditText) findViewById(R.id.edit_data);
+        seekBar = (SeekBar) findViewById(R.id.seekBar);
+        seekBarText = (TextView) findViewById(R.id.seekBarText);
 
         final Emitter emitter = (USE_FLASHLIGHT & this.getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA)) ?
                 new Flasher() : this;
@@ -100,6 +107,22 @@ public class Main extends Activity implements Emitter{
                 }
                 return handled;
             }
+        });
+
+        // Set up listener for on seek bar change event
+        seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar s, int progress, boolean fromUser) {
+                double bitLengthMs = Math.max(progress, 1) * PERIOD_LENGTH;
+                seekBarText.setText(Double.toString(bitLengthMs));
+                setBitLength(bitLengthMs);
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar s) {}
+
+            @Override
+            public void onStopTrackingTouch(SeekBar s) {}
         });
 
         // Set up an instance of SystemUiHider to control the system UI for
@@ -215,6 +238,10 @@ public class Main extends Activity implements Emitter{
     public void stopSending(View view) {
         // Stop button was clicked
         transmitter.stop();
+    }
+
+    public void setBitLength(double bitLengthMs) {
+        transmitter.setBitLength(bitLengthMs);
     }
 
     private void hideKeyboard() {

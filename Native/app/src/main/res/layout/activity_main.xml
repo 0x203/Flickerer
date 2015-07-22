@@ -7,7 +7,7 @@
         <EditText android:id="@+id/edit_data"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="1"
+            android:layout_weight="0.63"
             android:textColor="#444444"
             android:hint="@string/edit_data"
             android:inputType="text|textNoSuggestions|textImeMultiLine"
@@ -15,7 +15,8 @@
     </LinearLayout>
 
     <FrameLayout android:layout_width="match_parent" android:layout_height="match_parent"
-        android:fitsSystemWindows="true">
+        android:fitsSystemWindows="true"
+        android:id="@+id/layout">
 
         <LinearLayout android:id="@+id/fullscreen_content_controls" style="?metaButtonBarStyle"
             android:layout_width="match_parent" android:layout_height="wrap_content"
@@ -38,6 +39,24 @@
                 android:onClick="stopSending"
                 android:text="@string/button_stop" />
         </LinearLayout>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:text="125 ms"
+            android:id="@+id/seekBarText"
+            android:layout_gravity="center_horizontal|top"
+            android:layout_marginTop="150dp" />
+
+        <SeekBar
+            android:layout_width="311dp"
+            android:layout_height="wrap_content"
+            android:id="@+id/seekBar"
+            android:layout_gravity="center_horizontal|top"
+            android:layout_marginTop="100dp"
+            android:max="16"
+            android:progress="16" />
     </FrameLayout>
 
 </FrameLayout>

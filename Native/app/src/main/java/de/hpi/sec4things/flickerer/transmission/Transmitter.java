@@ -3,13 +3,17 @@ package de.hpi.sec4things.flickerer.transmission;
 import java.io.UnsupportedEncodingException;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 enum TransmitterState {
     STOPPED, INITIALIZING, STARTING, TRANSMITTING
 }
 
 public class Transmitter {
-    private final static int BIT_LENGTH = 125;   // ms
+    private final static int BIT_LENGTH_MULTIPLIER = 1000000; // nano
+    private static long BIT_LENGTH = (long) (31.25 * BIT_LENGTH_MULTIPLIER);   // nano seconds
     private final static int START_DELAY = 0;   // ms
     private final static int INIT_DUR = 10;     // s
     private final static boolean[] START_PATTERN =
@@ -18,7 +22,7 @@ public class Transmitter {
             {false, true, true, false, true, false, false, false}; // "01101000";
 
 
-    private Timer timer;
+    private ScheduledExecutorService timer;
     private Timer initTimer;
     private final Emitter emitter;
     private final boolean encodeWithHamming;
@@ -60,7 +64,7 @@ public class Transmitter {
             System.out.println("WARNING: Transmitter not yet finished, but new tranimssion started");
         }
         changeState(TransmitterState.INITIALIZING);
-        timer = new Timer();
+        timer = Executors.newScheduledThreadPool(1);
         initTimer = new Timer();
 
         // call tick with a fixed period
@@ -69,7 +73,7 @@ public class Transmitter {
             public void run() {
                 tick();
             }
-        }, START_DELAY, BIT_LENGTH);
+        }, START_DELAY, BIT_LENGTH, TimeUnit.NANOSECONDS);
 
         // stop initialization phase after timeout
         initTimer.schedule(new TimerTask() {
@@ -85,9 +89,9 @@ public class Transmitter {
             case STOPPED:
                 if(timer != null) {
                     try {
-                        timer.cancel();
+                        timer.shutdownNow();
                     } catch (Exception e) {
-                        // already cancled
+                        // already canceled
                         timer = null;
                     }
                     emitter.emitBit(false);
@@ -136,7 +140,7 @@ public class Transmitter {
     public void stop() {
         changeState(TransmitterState.STOPPED);
         try {
-            timer.cancel();
+            timer.shutdownNow();
         } catch (Exception e) {
             ;
         }
@@ -147,6 +151,10 @@ public class Transmitter {
         }
         timer = null;
         initTimer = null;
+    }
+
+    public void setBitLength(double bitLengthMs) {
+        BIT_LENGTH = (long) (bitLengthMs * BIT_LENGTH_MULTIPLIER);
     }
 }
 
