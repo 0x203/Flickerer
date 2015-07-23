@@ -51,7 +51,7 @@ public class Main extends Activity implements Emitter{
     /**
      * Whether to use the flashlight instead of display background to flicker, if available
      */
-    private static final boolean USE_FLASHLIGHT = false;
+    private static final boolean USE_FLASHLIGHT = true;
 
     /**
      * Whether or not to encode date with Hamming code
@@ -74,6 +74,7 @@ public class Main extends Activity implements Emitter{
     private View fullscreenBackground ;
     private EditText edit_data;
     private TextView seekBarText;
+    private TextView statusText;
     private SeekBar seekBar;
     private Transmitter transmitter;
 
@@ -90,10 +91,12 @@ public class Main extends Activity implements Emitter{
         edit_data = (EditText) findViewById(R.id.edit_data);
         seekBar = (SeekBar) findViewById(R.id.seekBar);
         seekBarText = (TextView) findViewById(R.id.seekBarText);
+        statusText = (TextView) findViewById(R.id.statusText);
+
 
         final Emitter emitter = (USE_FLASHLIGHT & this.getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA)) ?
                 new Flasher() : this;
-        transmitter = new Transmitter(emitter, USE_HAMMING);
+        transmitter = new Transmitter(emitter, USE_HAMMING, statusText);
 
         // Set up listener for send event
         edit_data.setOnEditorActionListener(new TextView.OnEditorActionListener() {

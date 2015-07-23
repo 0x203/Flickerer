@@ -57,6 +57,15 @@
             android:layout_marginTop="100dp"
             android:max="16"
             android:progress="16" />
+
+        <TextView
+            android:layout_width="207dp"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:id="@+id/statusText"
+            android:layout_gravity="center_horizontal|bottom"
+            android:layout_marginBottom="50dp"
+            android:gravity="center_horizontal" />
     </FrameLayout>
 
 </FrameLayout>
