@@ -9,10 +9,12 @@ public class Flasher implements Emitter{
 
     private static Camera camera;
     private final Camera.Parameters pOn, pOff;
+    private final SurfaceTexture surfaceTexture;
     private boolean isOn;
 
     public Flasher() {
         camera = Camera.open();
+        surfaceTexture = new SurfaceTexture(0);
 
         pOn = camera.getParameters();
         pOn.setFlashMode(Camera.Parameters.FLASH_MODE_TORCH);
@@ -21,7 +23,7 @@ public class Flasher implements Emitter{
 
         // Nexus 5 needs previewTexture
         try {
-            camera.setPreviewTexture(new SurfaceTexture(0));
+            camera.setPreviewTexture(surfaceTexture);
         } catch (IOException e) {
             e.printStackTrace();
         }

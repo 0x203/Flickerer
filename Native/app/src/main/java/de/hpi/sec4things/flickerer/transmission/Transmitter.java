@@ -1,5 +1,7 @@
 package de.hpi.sec4things.flickerer.transmission;
 
+import android.widget.TextView;
+
 import java.io.UnsupportedEncodingException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -9,6 +11,8 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.zip.CRC32;
+
+import de.hpi.sec4things.flickerer.R;
 
 enum TransmitterState {
     STOPPED, INITIALIZING, STARTING, TRANSMITTING
@@ -29,6 +33,7 @@ public class Transmitter {
     private Timer initTimer;
     private final Emitter emitter;
     private final boolean encodeWithHamming;
+    private final TextView statusText;
 
     private TransmitterState state = TransmitterState.STOPPED;
     private boolean currentInitBit = true;
@@ -39,9 +44,10 @@ public class Transmitter {
     private boolean[] startPattern = START_PATTERN;
 
 
-    public Transmitter(final Emitter emitter, final boolean encodeWithHamming) {
+    public Transmitter(final Emitter emitter, final boolean encodeWithHamming,  TextView statusText) {
         this.emitter = emitter;
         this.encodeWithHamming = encodeWithHamming;
+        this.statusText = statusText;
     }
 
     public byte[] concat(byte[] a, byte[] b) {
@@ -143,9 +149,15 @@ public class Transmitter {
 
     private void changeState(TransmitterState newState) {
         if (state != newState) {
+            final TextView textView = this.statusText;
+            final String statusString = newState.toString();
+            textView.post(new Runnable() {
+                public void run() {
+                    textView.setText(statusString);
+                }
+            });
             state = newState;
             currentIndex = 0;
-            // TODO: notify ui to update itself
         }
     }
 
