@@ -1,11 +1,14 @@
 package de.hpi.sec4things.flickerer.transmission;
 
 import java.io.UnsupportedEncodingException;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+import java.util.zip.CRC32;
 
 enum TransmitterState {
     STOPPED, INITIALIZING, STARTING, TRANSMITTING
@@ -30,7 +33,9 @@ public class Transmitter {
     private TransmitterState state = TransmitterState.STOPPED;
     private boolean currentInitBit = true;
     private int currentIndex;
+    private byte[] binaryLength;
     private byte[] binaryData;
+    private byte[] binaryCrc;
     private boolean[] startPattern = START_PATTERN;
 
 
@@ -39,13 +44,32 @@ public class Transmitter {
         this.encodeWithHamming = encodeWithHamming;
     }
 
+    public byte[] concat(byte[] a, byte[] b) {
+        int aLen = a.length;
+        int bLen = b.length;
+        byte[] c= new byte[aLen+bLen];
+        System.arraycopy(a, 0, c, 0, aLen);
+        System.arraycopy(b, 0, c, aLen, bLen);
+        return c;
+    }
+
     public void transmit(final String data) {
         try {
-            binaryData = data.getBytes( "UTF-8"); // or use "US-ASCII"?
+            binaryLength = ByteBuffer.allocate(4).order(ByteOrder.LITTLE_ENDIAN).putInt(data.length()).array();
+
+            binaryData = data.getBytes("UTF-8"); // or use "US-ASCII"?
+
+            CRC32 crc = new CRC32();
+            crc.update(binaryData);
+            long crcSum = crc.getValue();
+            binaryCrc = ByteBuffer.allocate(4).order(ByteOrder.LITTLE_ENDIAN).putInt(new Long(crcSum).intValue()).array();
         } catch (UnsupportedEncodingException e) {
             // TODO: show error
             return;
         }
+
+        // prepend length and append crc32 checksum to data
+        binaryData = concat(concat(binaryLength, binaryData), binaryCrc);
 
         if(encodeWithHamming) {
             binaryData = HammingEncoder.encode(binaryData);
