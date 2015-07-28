@@ -258,13 +258,18 @@ public class Main extends Activity implements Emitter{
     }
 
     @Override
-    public void emitBit(final boolean bit) {
-        // TODO: delete me when using flashlight (dont forget "implements Emitter"!)
+    public void emitBit(final Boolean bit) {
         runOnUiThread(new Runnable() {
             // this is needed, because we are called from a background thread which can't update the view
             @Override
             public void run() {
-                fullscreenBackground.setBackgroundColor(bit ? Color.WHITE : Color.BLACK);
+                if (bit == null) {
+                    // isch over
+                    fullscreenBackground.setBackgroundColor(Color.TRANSPARENT);
+                } else {
+                    // really emit bit
+                    fullscreenBackground.setBackgroundColor(bit ? Color.WHITE : Color.BLACK);
+                }
             }
         });
     }

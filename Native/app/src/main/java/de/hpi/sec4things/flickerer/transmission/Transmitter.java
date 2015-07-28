@@ -124,7 +124,7 @@ public class Transmitter {
                         // already canceled
                         timer = null;
                     }
-                    emitter.emitBit(false);
+                    emitter.emitBit(null);
                 }
                 break;
             case INITIALIZING:
