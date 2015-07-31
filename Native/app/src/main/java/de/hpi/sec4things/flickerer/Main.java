@@ -18,6 +18,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.SeekBar;
 import android.widget.TextView;
@@ -49,11 +50,6 @@ public class Main extends Activity implements Emitter{
     private static final boolean TOGGLE_ON_CLICK = false;
 
     /**
-     * Whether to use the flashlight instead of display background to flicker, if available
-     */
-    private static final boolean USE_FLASHLIGHT = true;
-
-    /**
      * Whether or not to encode date with Hamming code
      */
     private static final boolean USE_HAMMING = true;
@@ -77,6 +73,7 @@ public class Main extends Activity implements Emitter{
     private TextView statusText;
     private SeekBar seekBar;
     private Transmitter transmitter;
+    private Flasher flasher;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -94,9 +91,27 @@ public class Main extends Activity implements Emitter{
         statusText = (TextView) findViewById(R.id.statusText);
 
 
-        final Emitter emitter = (USE_FLASHLIGHT & this.getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA)) ?
-                new Flasher() : this;
-        transmitter = new Transmitter(emitter, USE_HAMMING, statusText);
+        transmitter = new Transmitter(this, USE_HAMMING, statusText);
+        CompoundButton flashlightToggle = (CompoundButton) findViewById(R.id.flashlighttogglebutton);
+        if (!this.getPackageManager().hasSystemFeature(PackageManager.FEATURE_CAMERA)) {
+            // no flashlight available
+            flashlightToggle.setVisibility(View.GONE);
+        } else {
+            // flashlight available
+            final Emitter self = this;
+            flashlightToggle.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                    if (isChecked) {
+                        if (flasher == null)
+                            flasher = new Flasher();
+                        transmitter.setEmitter(flasher);
+                    } else {
+                        transmitter.setEmitter(self);
+                    }
+                }
+            });
+            flashlightToggle.setChecked(true);
+        }
 
         // Set up listener for send event
         edit_data.setOnEditorActionListener(new TextView.OnEditorActionListener() {

@@ -31,7 +31,7 @@ public class Transmitter {
 
     private ScheduledExecutorService timer;
     private Timer initTimer;
-    private final Emitter emitter;
+    private Emitter emitter;
     private final boolean encodeWithHamming;
     private final TextView statusText;
 
@@ -48,6 +48,14 @@ public class Transmitter {
         this.emitter = emitter;
         this.encodeWithHamming = encodeWithHamming;
         this.statusText = statusText;
+    }
+
+    public void setEmitter(Emitter emitter) {
+        if (this.emitter != null & emitter != this.emitter) {
+            // turn off "old" emitter
+            this.emitter.emitBit(null);
+        }
+        this.emitter = emitter;
     }
 
     public byte[] concat(byte[] a, byte[] b) {
@@ -175,6 +183,7 @@ public class Transmitter {
 
     public void stop() {
         changeState(TransmitterState.STOPPED);
+        emitter.emitBit(null);
         try {
             timer.shutdownNow();
         } catch (Exception e) {
