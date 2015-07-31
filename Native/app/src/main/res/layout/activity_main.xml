@@ -61,14 +61,14 @@
             android:text="125 ms"
             android:id="@+id/seekBarText"
             android:layout_gravity="center_horizontal|top"
-            android:layout_marginTop="150dp" />
+            android:layout_marginTop="100dp" />
 
         <SeekBar
             android:layout_width="311dp"
             android:layout_height="wrap_content"
             android:id="@+id/seekBar"
             android:layout_gravity="center_horizontal|top"
-            android:layout_marginTop="100dp"
+            android:layout_marginTop="115dp"
             android:max="16"
             android:progress="16" />
 
