@@ -273,19 +273,18 @@ public class Main extends Activity implements Emitter{
     }
 
     @Override
-    public void emitBit(final Boolean bit) {
+    public void emitBit(final boolean bit) {
         runOnUiThread(new Runnable() {
             // this is needed, because we are called from a background thread which can't update the view
             @Override
             public void run() {
-                if (bit == null) {
-                    // isch over
-                    fullscreenBackground.setBackgroundColor(Color.TRANSPARENT);
-                } else {
-                    // really emit bit
-                    fullscreenBackground.setBackgroundColor(bit ? Color.WHITE : Color.BLACK);
-                }
+                fullscreenBackground.setBackgroundColor(bit ? Color.WHITE : Color.BLACK);
             }
         });
+    }
+
+    @Override
+    public void ischOver() {
+        fullscreenBackground.setBackgroundColor(Color.TRANSPARENT);
     }
 }

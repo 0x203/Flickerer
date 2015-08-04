@@ -43,14 +43,16 @@ public class Flasher implements Emitter{
     }
 
     @Override
-    public void emitBit(final Boolean bit) {
-        if (bit == null) {
-            // isch over
-            turnOff();
-        } else if (bit & !isOn) {
+    public void emitBit(final boolean bit) {
+        if (bit & !isOn) {
             turnOn();
         } else if (isOn & !bit) {
             turnOff();
         }
+    }
+
+    @Override
+    public void ischOver() {
+        turnOff();
     }
 }

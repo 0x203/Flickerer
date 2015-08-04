@@ -53,7 +53,7 @@ public class Transmitter {
     public void setEmitter(Emitter emitter) {
         if (this.emitter != null & emitter != this.emitter) {
             // turn off "old" emitter
-            this.emitter.emitBit(null);
+            this.emitter.ischOver();
         }
         this.emitter = emitter;
     }
@@ -132,7 +132,7 @@ public class Transmitter {
                         // already canceled
                         timer = null;
                     }
-                    emitter.emitBit(null);
+                    emitter.ischOver();
                 }
                 break;
             case INITIALIZING:
@@ -183,7 +183,7 @@ public class Transmitter {
 
     public void stop() {
         changeState(TransmitterState.STOPPED);
-        emitter.emitBit(null);
+        emitter.ischOver();
         try {
             timer.shutdownNow();
         } catch (Exception e) {
