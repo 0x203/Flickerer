@@ -1,0 +1,86 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
+    android:layout_height="match_parent" android:background="#ffffff" tools:context=".Main">
+
+    <LinearLayout android:id="@+id/fullscreen_content" android:layout_width="match_parent"
+        android:layout_height="match_parent" android:keepScreenOn="true" android:orientation="vertical">
+        <EditText android:id="@+id/edit_data"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="0.63"
+            android:layout_marginTop="50dp"
+            android:textColor="#444444"
+            android:hint="@string/edit_data"
+            android:inputType="text|textNoSuggestions|textImeMultiLine"
+            android:imeOptions="actionSend"/>
+    </LinearLayout>
+
+    <FrameLayout android:layout_width="match_parent" android:layout_height="match_parent"
+        android:fitsSystemWindows="true"
+        android:id="@+id/layout">
+
+        <LinearLayout android:id="@+id/fullscreen_content_controls" style="?metaButtonBarStyle"
+            android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:layout_gravity="bottom|center_horizontal"
+            android:background="@color/black_overlay" android:orientation="horizontal"
+            tools:ignore="UselessParent">
+
+            <Button
+                android:id="@+id/send_data"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:onClick="sendData"
+                android:text="@string/button_start" />
+            <Button
+                android:id="@+id/stop_sending"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:onClick="stopSending"
+                android:text="@string/button_stop" />
+        </LinearLayout>
+
+        <Switch
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal|top"
+            android:layout_marginTop="50dp"
+            android:id="@+id/flashlighttogglebutton"
+            android:showText="true"
+            android:text="Use Flashlight:"
+            android:textOn="Yes"
+            android:textOff="No"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:textColor="#444444"
+            />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:text="125 ms"
+            android:id="@+id/seekBarText"
+            android:layout_gravity="center_horizontal|top"
+            android:layout_marginTop="100dp" />
+
+        <SeekBar
+            android:layout_width="311dp"
+            android:layout_height="wrap_content"
+            android:id="@+id/seekBar"
+            android:layout_gravity="center_horizontal|top"
+            android:layout_marginTop="115dp"
+            android:max="16"
+            android:progress="16" />
+
+        <TextView
+            android:layout_width="207dp"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:id="@+id/statusText"
+            android:layout_gravity="center_horizontal|bottom"
+            android:layout_marginBottom="50dp"
+            android:gravity="center_horizontal" />
+    </FrameLayout>
+
+</FrameLayout>
