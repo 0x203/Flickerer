@@ -6,7 +6,14 @@ It will be used in the seminar ["Security for the Internet of Things"](http://hp
 
 The contiki app for decoding is in development [here](https://github.com/Lixissimus/Security4Things).
 
-## Setup
+You can find two versions of the flickerer in this repository:
+
+- an web-app deployable on Android using PhoneGap
+- an native Android app
+
+The web-app has more options in the UI and is easier portable on other platforms (thanks to PhoneGap). The native App has a leaner design and can make use of the flashlight of the phone.
+
+## Setup for JS-APP (in "flickerer" directory)
 
 The following instructions are for a linux-based environment, please refer to the docs for Windows or Mac.
 
