@@ -61,7 +61,7 @@ If it says there are no installed platforms, execute the following, otherwise ju
 cordova platform add android
 ```
 
-## Build instructions
+### Build instructions
 
 Switch into the phonegap folder (flickerer).
 
