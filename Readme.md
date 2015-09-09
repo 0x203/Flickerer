@@ -2,9 +2,11 @@
 
 Simple WebApp for visual encoding.
 
-It will be used in the seminar ["Security for the Internet of Things"](http://hpi.de/studium/lehrveranstaltungen/it-systems-engineering/lehrveranstaltung/course/2015/identity_management.html) in order to transmit some data to a [TelosB mote](http://www.advanticsys.com/shop/mtmcm5000msp-p-14.html) via it's light sensor.
+It will be used in the seminar ["Security for the Internet of Things"](http://hpi.de/studium/lehrveranstaltungen/it-systems-engineering/lehrveranstaltung/course/2015/identity_management.html) in order to transmit some data to a [TelosB mote](http://www.advanticsys.com/shop/mtmcm5000msp-p-14.html) via its light sensor.
 
 The contiki app for decoding is in development [here](https://github.com/Lixissimus/Security4Things).
+
+The paper explaining the use and benefit of this Android app will be linked here.
 
 You can find two versions of the flickerer in this repository:
 
@@ -13,7 +15,7 @@ You can find two versions of the flickerer in this repository:
 
 The web-app has more options in the UI and is easier portable on other platforms (thanks to PhoneGap). The native App has a leaner design and can make use of the flashlight of the phone.
 
-## Setup for JS-APP (in "flickerer" directory)
+## Setup for JS-App (in "flickerer" directory)
 
 The following instructions are for a linux-based environment, please refer to the docs for Windows or Mac.
 
@@ -74,3 +76,7 @@ To install the app on your phone, connect it to your machine and run
 ```
 cordova run android
 ```
+
+## Setup for Android app (in "Native" directory)
+
+Install Android Studio, import the project and run it.
